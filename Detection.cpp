@@ -40,7 +40,19 @@ void isKeyloggerRunning() {
         {
             keyloggerDitected = 1;
             cout << "[!] Keylogger detected..! Process Name: " << processName <<" Process ID: "<<pe32.th32ProcessID<<endl;
-            break;
+            cout<< "[+] Killing the process..."<<endl;
+            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+            // in one liner condition
+            if (hProcess != NULL && TerminateProcess(hProcess, 0))
+            {
+                cout << "[+] Process terminated successfully"<<endl;
+            }
+            else
+            {
+                cout << "[-] Unable to terminate the process"<<endl;
+            }
+
+            CloseHandle(hProcess);
         }
     } while (Process32Next(hProcessSnap, &pe32));
 
