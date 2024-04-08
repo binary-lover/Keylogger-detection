@@ -64,8 +64,14 @@ void isKeyloggerRunning() {
     CloseHandle(hProcessSnap);
 }
 
+
 int main() {
     isKeyloggerRunning();
+    // helo();
+    // using hash to detect keylogger
+    // launch the keyLogger
+
+
 
     return 0;
 
