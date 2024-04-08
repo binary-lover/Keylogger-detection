@@ -10,10 +10,35 @@
 
 using namespace std;
 
-void isKeyloggerRunning() {
+std::string GetProcessFilePath(DWORD processId) {
+    std::string filePath;
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
+    if (hProcess != NULL) {
+        TCHAR szProcessPath[MAX_PATH];
+        DWORD dwSize = sizeof(szProcessPath) / sizeof(TCHAR);
+        if (QueryFullProcessImageName(hProcess, 0, szProcessPath, &dwSize) != 0) {
+            filePath = szProcessPath;
+        }
+        CloseHandle(hProcess);
+    }
+    return filePath;
+}
+
+struct IntStringPair {
+    int processID;
+    std::string filePath;
+};
+
+void addPair(std::vector<IntStringPair*>& pairs, int intValue, const std::string& stringValue) {
+    IntStringPair* pair = new IntStringPair{intValue, stringValue};
+    pairs.push_back(pair);
+}
+
+void isKeyloggerRunning( std::vector<IntStringPair*>& pairs) {
     HANDLE hProcessSnap;
     PROCESSENTRY32 pe32;
-
+    
+    
     // Take a snapshot of all processes in the system.
     hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hProcessSnap == INVALID_HANDLE_VALUE) {
@@ -35,7 +60,10 @@ void isKeyloggerRunning() {
     bool keyloggerDitected = 0;   
     do {
         std::string processName = pe32.szExeFile;
-        // cout << "Process Name: " << processName << endl;
+        // cout << "Process Name: " << processName<<" Process ID: "<<pe32.th32ProcessID<<"location "<<GetProcessFilePath(pe32.th32ProcessID)<<endl;
+        // cout<<"file path"<<GetProcessFilePath(pe32.th32ProcessID)<<endl;
+        addPair(pairs,pe32.th32ProcessID , GetProcessFilePath(pe32.th32ProcessID));
+
         if (processName.find("keylog") != std::string::npos || processName.find("key_log") != std::string::npos || processName.find("k_log") != std::string::npos || processName.find("logger") != std::string::npos )
         {
             keyloggerDitected = 1;
@@ -65,8 +93,16 @@ void isKeyloggerRunning() {
 }
 
 
+
+
+
 int main() {
-    isKeyloggerRunning();
+    std::vector<IntStringPair*> pairVector;
+    isKeyloggerRunning(pairVector);
+    // Access and print pairs in the vector
+    for (const auto& pair : pairVector) {
+        std::cout << "Process ID: " << pair->processID << ", File Path: " << pair->filePath << std::endl;
+    }
     // helo();
     // using hash to detect keylogger
     // launch the keyLogger
