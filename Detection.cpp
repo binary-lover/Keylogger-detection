@@ -12,22 +12,22 @@
 
 using namespace std;
 
-std::string GetProcessFilePath(DWORD processId)
-{
-    std::string filePath;
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
-    if (hProcess != NULL)
-    {
-        TCHAR szProcessPath[MAX_PATH];
-        DWORD dwSize = sizeof(szProcessPath) / sizeof(TCHAR);
-        if (QueryFullProcessImageName(hProcess, 0, szProcessPath, &dwSize) != 0)
-        {
-            filePath = szProcessPath;
-        }
-        CloseHandle(hProcess);
-    }
-    return filePath;
-}
+// std::string GetProcessFilePath(DWORD processId)
+// {
+//     std::string filePath;
+//     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
+//     if (hProcess != NULL)
+//     {
+//         TCHAR szProcessPath[MAX_PATH];
+//         DWORD dwSize = sizeof(szProcessPath) / sizeof(TCHAR);
+//         if (QueryFullProcessImageName(hProcess, 0, szProcessPath, &dwSize) != 0)
+//         {
+//             filePath = szProcessPath;
+//         }
+//         CloseHandle(hProcess);
+//     }
+//     return filePath;
+// }
 
 struct IntStringPair
 {
@@ -104,7 +104,7 @@ void isKeyloggerRunning(std::vector<IntStringPair *> &pairs)
     CloseHandle(hProcessSnap);
 }
 
-std::string performHttpGetRequest(const std::string& url) {
+string performHttpGetRequest(const std::string& url) {
     HINTERNET hInternet = InternetOpenA("HTTPGET", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
     HINTERNET hConnect = InternetOpenUrlA(hInternet, url.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
     
@@ -126,7 +126,7 @@ std::string performHttpGetRequest(const std::string& url) {
 
 // Function to search for a specific word online and append the results to a text file
 void searchAndAppendResults(const std::string& searchWord, const std::string& outputFile) {
-    // std::string API_KEY = "AIzaSyCOwb8Rx0lEmTIVhuJCFk62s3S_NCxgnFE";
+    // std::string API_KEY = "";
     // std::string CX = "72312292f759b41d9";
     // std::string apiUrl = "https://www.googleapis.com/customsearch/v1?key=" + API_KEY + "&cx=" + CX + "&q=" + searchWord;
     // std::string jsonResponse = performHttpGetRequest(apiUrl);
@@ -192,12 +192,6 @@ int main()
         std::string searchWord ="what is " + pair->filePath;       // Change this to the word you want to search for
         std::string outputFile = "search_results.txt"; // Change this to the desired output file name
         
-
-        // remove .exe from file name if exists
-        // if (searchWord.size() > 4 && searchWord.substr(searchWord.size() - 4) == ".exe")
-        //     {
-        //         searchWord.erase(searchWord.end()-4, searchWord.end());
-        //     }
 
         // remove [] from filename
         // search for the exact file name
